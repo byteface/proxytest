@@ -1,0 +1,16 @@
+aiofiles==0.7.0
+certifi==2021.10.8
+charset-normalizer==2.0.7
+domonic==0.6.6
+httptools==0.3.0
+idna==3.3
+multidict==5.2.0
+python-dateutil==2.8.2
+requests==2.26.0
+sanic==21.9.1
+sanic-routing==0.7.1
+six==1.16.0
+ujson==4.2.0
+urllib3==1.26.7
+uvloop==0.16.0
+websockets==10.0
