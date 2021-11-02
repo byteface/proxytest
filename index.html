@@ -146,9 +146,8 @@
 		<article>
 			<h1>Test page for proxy scraping and range requests</h1>
 			<p>Test the api to see the responses.</p>
-			<p>This is an excercise in returning partial pieces data from files.</p>
 			<p>Enter a url and a query to return the response.</p>
-			<p>The query is a css query to run on that webpage.</p>
+			<p>The query is a css query to run on that webpage. i.e. try using a or img</p>
 			<input id="url" type="text" name="url" placeholder="google.com" />
 			<input id="query" type="text" name="query" placeholder="Enter css selector here" />
 			<hr />
@@ -158,11 +157,13 @@
 			<p>This button hits the api and just returns the character byte positions for which you can then make a range request.</p>
 			<p>This can be done with or w/o tags.</p>
 			<button type="button" onclick="get_bytes()">Get Bytes</button>
-			<hr />
-			<p>This button uses the byte positions from the get bytes call to retrieve content with range requests.</p>
-			<p>this would only work on servers that support CORS and range requests.</p>
-			<button type="button" onclick="use_bytes_to_get_content()">Use bytes to get content.</button>
-			<br />
+			<hr /><!--
+<div>
+	<p>This button uses the byte positions from the get bytes call to retrieve content with range requests.</p>
+	<p>this would only work on servers that support CORS and range requests.</p>
+	<button type="button" onclick="use_bytes_to_get_content()">Use bytes to get content.</button>
+	<br />
+</div>-->
 			<h2>Response</h2>
 			<div id="response">
 			</div>
