@@ -13,6 +13,8 @@ from domonic.html import *
 from domonic.ext.html5lib_ import getTreeBuilder
 from domonic.javascript import Global
 
+from domonic.webapi import URL
+
 
 app = Sanic(__name__)
 CORS(app)
@@ -148,7 +150,6 @@ def create_homepage():
                         return response.text();
                     })
                     .then(data => {
-                        window.console.log("does this fucking run or what?");
                         window.console.log(data);
                         $('#response').html(data);
                     })
@@ -282,6 +283,27 @@ async def get_bytes(request):
 
     return response.json(json.dumps(results))
 
+def absolutely(url, elements):
+    ''' loops the elements converting any paths to absolute ones '''
+    u = URL(url)
+    for el in elements:
+        # list all attributes that may have a relative resource and convert them to absolute
+        for attrib in ['href', 'src']:
+            if el.hasAttribute(attrib):
+                if el.getAttribute(attrib).startswith('#'):
+                    el.setAttribute(attrib, u.protocol + '://' + u.host + u.path + el.getAttribute(attrib))
+                elif el.getAttribute(attrib).startswith('//'):
+                    el.setAttribute(attrib, u.protocol + ':' + el.getAttribute(attrib))
+                elif el.getAttribute(attrib).startswith('://'):
+                    el.setAttribute(attrib, u.protocol + el.getAttribute(attrib))
+                elif el.getAttribute(attrib).startswith('http'):
+                    # print('pudding::', el.getAttribute(attrib))
+                    el.setAttribute(attrib, el.getAttribute(attrib))
+                elif el.getAttribute(attrib).startswith('/'):
+                    el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
+                else:
+                    el.setAttribute(attrib, u.protocol + '://' + u.host + '/' + el.getAttribute(attrib))
+        return elements
 
 @app.route("/c", methods=['GET', 'OPTIONS', 'POST'])
 async def get_content(request):
@@ -298,13 +320,8 @@ async def get_content(request):
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
     page = parser.parse(r.content.decode("utf-8"))
 
-    print('WE ARE LOOKING FOR', q)
-
-    # result = page.getElementsBySelector(q, page)
     result = page.querySelectorAll(q)
-    
-    print("result")
-    print(result)
+    result = absolutely(url, result)  #TODO - make this an option?
 
     return response.html(f"{''.join([str(r) for r in result])}")
 
