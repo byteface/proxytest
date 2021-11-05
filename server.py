@@ -298,6 +298,9 @@ async def get_content(request):
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
     page = parser.parse(r.content.decode("utf-8"))
 
+    print('WE ARE LOOKING FOR', q)
+
+    # result = page.getElementsBySelector(q, page)
     result = page.querySelectorAll(q)
     
     print("result")
