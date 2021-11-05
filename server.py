@@ -301,6 +301,8 @@ def absolutely(url, elements):
                     el.setAttribute(attrib, el.getAttribute(attrib))
                 elif el.getAttribute(attrib).startswith('/'):
                     el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
+                elif el.getAttribute(attrib).startswith('data:image'):
+                    el.setAttribute(attrib, el.getAttribute(attrib))
                 else:
                     el.setAttribute(attrib, u.protocol + '://' + u.host + '/' + el.getAttribute(attrib))
         return elements
