@@ -345,6 +345,13 @@ async def get_questions_page(request):
     return response.html(f"{questions_page}")
 
 
+@app.route("/")
+async def get_index(request):
+    # load the index.html file
+    with open('index.html', 'r') as f:
+        return response.html(f.read())
+
+
 # ideas...
 # utilise tiny url?
 # create byte maps. of meta data or tag nodes
