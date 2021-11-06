@@ -12,8 +12,8 @@
                 // TODO - may need to encode the css query also. dont they have illegal transport characters?
                 let query = $('#query').val();
 
-                window.console.log(url);
-                window.console.log(query);
+                //window.console.log(url);
+                //window.console.log(query);
 
                 $.ajax({
                     url: 'http://localhost:8000/c?url=' + url + '&query=' + query + "",
@@ -24,6 +24,7 @@
                         $('#response_raw').html(data);
                     }
                 });
+
             }
 
             const get_bytes = () => {

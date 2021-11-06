@@ -35,8 +35,8 @@ def create_homepage():
                 // TODO - may need to encode the css query also. dont they have illegal transport characters?
                 let query = $('#query').val();
 
-                window.console.log(url);
-                window.console.log(query);
+                //window.console.log(url);
+                //window.console.log(query);
 
                 $.ajax({
                     url: 'http://localhost:8000/c?url=' + url + '&query=' + query + "",
@@ -47,6 +47,7 @@ def create_homepage():
                         $('#response_raw').html(data);
                     }
                 });
+
             }
 
             const get_bytes = () => {
@@ -196,6 +197,7 @@ def create_homepage():
     with open('index.html', 'w') as f:
         f.write(f"{page}")
 
+
 # dont need to do this yet. for now parse a live site
 # def create_datapage():
 #     page = html(
@@ -291,7 +293,8 @@ def absolutely(url, elements):
         for attrib in ['href', 'src']:
             if el.hasAttribute(attrib):
                 if el.getAttribute(attrib).startswith('#'):
-                    el.setAttribute(attrib, u.protocol + '://' + u.host + u.path + el.getAttribute(attrib))
+                    # el.setAttribute(attrib, u.protocol + '://' + u.host + u.path + el.getAttribute(attrib))
+                    el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
                 elif el.getAttribute(attrib).startswith('//'):
                     el.setAttribute(attrib, u.protocol + ':' + el.getAttribute(attrib))
                 elif el.getAttribute(attrib).startswith('://'):
@@ -305,27 +308,41 @@ def absolutely(url, elements):
                     el.setAttribute(attrib, el.getAttribute(attrib))
                 else:
                     el.setAttribute(attrib, u.protocol + '://' + u.host + '/' + el.getAttribute(attrib))
-        return elements
+    return elements
 
 @app.route("/c", methods=['GET', 'OPTIONS', 'POST'])
 async def get_content(request):
     url = request.args.get("url")
     q = request.args.get("query")
 
-    # print(url, q)
+    u = Global.decodeURIComponent(url)
+    q = Global.decodeURIComponent(q)
+    
+    print(url, q)
     # return 'hi'
     if 'https' not in url:
         url = 'https://' + url
 
-    r = requests.get(url)
+    # headers = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' }
+    r = requests.get(url)  #, headers=headers, timeout=10)
 
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
+    # print('res1:', r.text)
     page = parser.parse(r.content.decode("utf-8"))
-
     result = page.querySelectorAll(q)
+    print('res1:', result)
     result = absolutely(url, result)  #TODO - make this an option?
+    print('res2:', result)
+    if result is not None:
+        return response.html(f"{'<br/>'.join([str(r) for r in result])}")
+    
+    return response.html("")
 
-    return response.html(f"{''.join([str(r) for r in result])}")
+
+from app.questions import questions_page
+@app.route("/q")
+async def get_questions_page(request):
+    return response.html(f"{questions_page}")
 
 
 # ideas...
