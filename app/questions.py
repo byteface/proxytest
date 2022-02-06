@@ -7,7 +7,7 @@ questions_page = html(
         link(_rel="stylesheet", _href=CDN_CSS.MARX),
         script(_src='https://code.jquery.com/jquery-3.5.1.min.js'),
         script("""
-        
+
         const get_content = (url, query) => {
             let u = encodeURIComponent(url);
             let q = encodeURIComponent(query);
@@ -28,7 +28,7 @@ questions_page = html(
             let query = $a.data('selector');
             get_content(url, query);
         });
-        
+
         """)
     ),
     body(

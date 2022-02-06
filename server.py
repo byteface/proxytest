@@ -9,7 +9,8 @@ import html5lib
 from sanic import Sanic, response
 from sanic_cors import CORS, cross_origin
 
-from domonic.html import *
+# from domonic.html import *
+from dom import *
 from domonic.ext.html5lib_ import getTreeBuilder
 from domonic.javascript import Global
 
@@ -126,8 +127,7 @@ def create_homepage():
                     }
                 });
                 */
-                
-                
+
                 fetch(url, {
                         method : "GET",
                         //headers: {
@@ -171,7 +171,7 @@ def create_homepage():
                 # p('This is an excercise in returning partial pieces data from files.'),
                 p('Enter a url and a query to return the response.'),
                 p('The query is a css query to run on that webpage. i.e. try using a or img'),
-                input(_id="url", _type='text', _name='url', _placeholder='google.com'),
+                input(_id="url", _type='text', _name='url', _placeholder='www.google.com'),
                 input(_id="query", _type='text', _name='query', _placeholder='Enter css selector here'),
                 hr(),
                 p('This button hits the api and just returns the nodes specified by the css query.'),
@@ -181,12 +181,13 @@ def create_homepage():
                 p('This can be done with or w/o tags.'),
                 button('Get Bytes', _type='button', _onclick='get_bytes()'),
                 hr(),
-                comment(div(
-                    p('This button uses the byte positions from the get bytes call to retrieve content with range requests.'),
-                    p('this would only work on servers that support CORS and range requests.'),
-                    button('Use bytes to get content.', _type='button', _onclick='use_bytes_to_get_content()'),
-                    br(),
-                )),
+                # TODO - bug with comment node on adom
+                # comment(div(
+                #     p('This button uses the byte positions from the get bytes call to retrieve content with range requests.'),
+                #     p('this would only work on servers that support CORS and range requests.'),
+                #     button('Use bytes to get content.', _type='button', _onclick='use_bytes_to_get_content()'),
+                #     br(),
+                # )),
                 h2('Response'),
                 div(_id='response'),
                 h2('Response raw'),
@@ -264,9 +265,9 @@ async def get_bytes(request):
 
     # for start_byte, the first byte we want is the one after the '>' symbol of the opening tag. so the first byte of actual content.
     # for end_byte, the first byte we want is the one before the '<' symbol of the closing tag. so the last byte of actual content.
-    
+
     # i.e {q:[[start_byte, end_byte],[start_byte, end_byte]]}
-    
+
     # the byte positions should be relative to their positions in the source html.
 
     # use the elemets returned from the query to know what blobs of content we want to find byte positions for.
@@ -285,29 +286,59 @@ async def get_bytes(request):
 
     return response.json(json.dumps(results))
 
+# def absolutely(url, elements):
+#     ''' loops the elements converting any paths to absolute ones '''
+#     u = URL(url)
+#     for el in elements:
+#         # list all attributes that may have a relative resource and convert them to absolute
+#         for attrib in ['href', 'src']:
+#             if el.hasAttribute(attrib):
+#                 if el.getAttribute(attrib).startswith('#'):
+#                     # el.setAttribute(attrib, u.protocol + '://' + u.host + u.path + el.getAttribute(attrib))
+#                     el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
+#                 elif el.getAttribute(attrib).startswith('//'):
+#                     el.setAttribute(attrib, u.protocol + ':' + el.getAttribute(attrib))
+#                 elif el.getAttribute(attrib).startswith('://'):
+#                     el.setAttribute(attrib, u.protocol + el.getAttribute(attrib))
+#                 elif el.getAttribute(attrib).startswith('http'):
+#                     # print('pudding::', el.getAttribute(attrib))
+#                     el.setAttribute(attrib, el.getAttribute(attrib))
+#                 elif el.getAttribute(attrib).startswith('/'):
+#                     el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
+#                 elif el.getAttribute(attrib).startswith('data:'):
+#                     el.setAttribute(attrib, el.getAttribute(attrib))
+#                 else:
+#                     el.setAttribute(attrib, u.protocol + '://' + u.host + '/' + el.getAttribute(attrib))
+#     return elements
+
+
 def absolutely(url, elements):
     ''' loops the elements converting any paths to absolute ones '''
     u = URL(url)
     for el in elements:
         # list all attributes that may have a relative resource and convert them to absolute
         for attrib in ['href', 'src']:
-            if el.hasAttribute(attrib):
-                if el.getAttribute(attrib).startswith('#'):
-                    # el.setAttribute(attrib, u.protocol + '://' + u.host + u.path + el.getAttribute(attrib))
-                    el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
-                elif el.getAttribute(attrib).startswith('//'):
-                    el.setAttribute(attrib, u.protocol + ':' + el.getAttribute(attrib))
-                elif el.getAttribute(attrib).startswith('://'):
-                    el.setAttribute(attrib, u.protocol + el.getAttribute(attrib))
-                elif el.getAttribute(attrib).startswith('http'):
-                    # print('pudding::', el.getAttribute(attrib))
-                    el.setAttribute(attrib, el.getAttribute(attrib))
-                elif el.getAttribute(attrib).startswith('/'):
-                    el.setAttribute(attrib, u.protocol + '://' + u.host + el.getAttribute(attrib))
-                elif el.getAttribute(attrib).startswith('data:'):
-                    el.setAttribute(attrib, el.getAttribute(attrib))
-                else:
-                    el.setAttribute(attrib, u.protocol + '://' + u.host + '/' + el.getAttribute(attrib))
+            try:
+                if el.attributes[attrib]:
+                    # print('lovely')
+                    if el.attributes[attrib].startswith('#'):
+                        el.attrs[attrib] = u.protocol + '://' + u.host + el.attributes[attrib]
+                    elif el.attributes[attrib].startswith('//'):
+                        el.attrs[attrib] = u.protocol + ':' + el.attributes[attrib]
+                    elif el.attributes[attrib].startswith('://'):
+                        el.attrs[attrib] = u.protocol + el.attributes[attrib]
+                    elif el.attributes[attrib].startswith('http'):
+                        el.attrs[attrib] = el.attributes[attrib]
+                    elif el.attributes[attrib].startswith('/'):
+                        # print('CHANGE IT', u.protocol, u.host )
+                        el.attrs[attrib] = u.protocol + '://' + u.host + el.attributes[attrib]
+                        # print(el.attributes[attrib] )
+                    elif el.attributes[attrib].startswith('data:'):
+                        el.attrs[attrib] = el.attributes[attrib]
+                    else:
+                        el.attrs[attrib] = u.protocol + '://' + u.host + '/' + el.attributes[attrib]
+            except KeyError:
+                pass
     return elements
 
 @app.route("/c", methods=['GET', 'OPTIONS', 'POST'])
@@ -317,25 +348,26 @@ async def get_content(request):
 
     u = Global.decodeURIComponent(url)
     q = Global.decodeURIComponent(q)
-    
-    print(url, q)
-    # return 'hi'
+
     if 'https' not in url:
         url = 'https://' + url
 
-    # headers = {'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0' }
+    '''
     r = requests.get(url)  #, headers=headers, timeout=10)
-
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
-    # print('res1:', r.text)
     page = parser.parse(r.content.decode("utf-8"))
     result = page.querySelectorAll(q)
-    print('res1:', result)
-    result = absolutely(url, result)  #TODO - make this an option?
-    print('res2:', result)
+    '''
+
+    from window import window
+    window.location = url
+    result = window.document.css(q)
+
+    result = absolutely(url, result)  # TODO - make this an option?
+
     if result is not None:
-        return response.html(f"{'<br/>'.join([str(r) for r in result])}")
-    
+        return response.html(f"{'<br/>'.join([str(r.html) for r in result])}")
+
     return response.html("")
 
 
@@ -343,6 +375,29 @@ from app.questions import questions_page
 @app.route("/q")
 async def get_questions_page(request):
     return response.html(f"{questions_page}")
+
+
+# this endpoint is for writing to only
+# a reverse client to testing pushes from a browser console
+
+# fetch("http://localhost:8000/dom", {method:"post", 
+# headers: { 'Content-Type': 'application/json' }, 
+# mode: 'no-cors', body: JSON.stringify({ document: document })});
+
+# JSON.stringify({ document: document.body.outerHTML })}); ??
+
+@app.route("/dom", methods=['POST'])
+async def set_dom(request):
+    domstr = request.args.get("document")
+    # return response.html(f"{questions_page}")
+    parser = html5lib.HTMLParser(tree=getTreeBuilder())
+    # print('res1:', r.text)
+    page = parser.parse(domstr)
+    result = page.querySelectorAll('a')
+    print('res1:', result)
+    result = absolutely(url, result)  #TODO - make this an option?
+    print('res2:', result)
+    return 200
 
 
 @app.route("/")

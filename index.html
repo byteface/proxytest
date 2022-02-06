@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<script src="https://code.jquery.com/jquery-3.5.1.min.js">
-		</script>
-		<script>
+<html><head><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script>
                
             const get_content = () => {
                 let url = $('#url').val();
@@ -103,8 +98,7 @@
                     }
                 });
                 */
-                
-                
+
                 fetch(url, {
                         method : "GET",
                         //headers: {
@@ -139,37 +133,4 @@
 
             }
 
-            
-		</script>
-	</head>
-	<body>
-		<article>
-			<h1>Test page for proxy scraping and range requests</h1>
-			<p>Test the api to see the responses.</p>
-			<p>Enter a url and a query to return the response.</p>
-			<p>The query is a css query to run on that webpage. i.e. try using a or img</p>
-			<input id="url" type="text" name="url" placeholder="google.com" />
-			<input id="query" type="text" name="query" placeholder="Enter css selector here" />
-			<hr />
-			<p>This button hits the api and just returns the nodes specified by the css query.</p>
-			<button type="button" onclick="get_content()">Get Content</button>
-			<hr />
-			<p>This button hits the api and just returns the character byte positions for which you can then make a range request.</p>
-			<p>This can be done with or w/o tags.</p>
-			<button type="button" onclick="get_bytes()">Get Bytes</button>
-			<hr /><!--
-<div>
-	<p>This button uses the byte positions from the get bytes call to retrieve content with range requests.</p>
-	<p>this would only work on servers that support CORS and range requests.</p>
-	<button type="button" onclick="use_bytes_to_get_content()">Use bytes to get content.</button>
-	<br />
-</div>-->
-			<h2>Response</h2>
-			<div id="response">
-			</div>
-			<h2>Response raw</h2>
-			<xmp id="response_raw">
-			</xmp>
-		</article>
-	</body>
-</html>
+            </script></head><body><article><h1>Test page for proxy scraping and range requests</h1><p>Test the api to see the responses.</p><p>Enter a url and a query to return the response.</p><p>The query is a css query to run on that webpage. i.e. try using a or img</p><input id="url" type="text" name="url" placeholder="www.google.com"><input id="query" type="text" name="query" placeholder="Enter css selector here"><hr><p>This button hits the api and just returns the nodes specified by the css query.</p><button type="button" onclick="get_content()">Get Content</button><hr><p>This button hits the api and just returns the character byte positions for which you can then make a range request.</p><p>This can be done with or w/o tags.</p><button type="button" onclick="get_bytes()">Get Bytes</button><hr><h2>Response</h2><div id="response"></div><h2>Response raw</h2><xmp id="response_raw"></xmp></article></body></html>
